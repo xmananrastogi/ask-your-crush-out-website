@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be Mine?</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --secondary: #4ecdc4;
+            --dark: #292f36;
+            --light: #f7fff7;
+            --accent: #ff9f1c;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 800px;
+            position: relative;
+        }
+        
+        .header_text {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subheader {
+            font-size: 1.2rem;
+            color: var(--dark);
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+        
+        .gif_container {
+            margin: 2rem 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 100%;
+        }
+        
+        .gif_container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+        
+        .gif_container img:hover {
+            transform: scale(1.02);
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 2rem;
+            position: relative;
+            min-height: 60px;
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        #yesButton {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        #yesButton:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(255, 107, 107, 0.4);
+        }
+        
+        #yesButton:active {
+            transform: translateY(1px);
+        }
+        
+        #noButton {
+            background-color: var(--secondary);
+            color: white;
+            position: absolute;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .attempt-counter {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--dark);
+            opacity: 0.7;
+        }
+        
+        @media (max-width: 768px) {
+            .header_text {
+                font-size: 1.8rem;
+            }
+            
+            .btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            #noButton {
+                position: relative;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <h1 class="header_text">Will You Be My Valentine?</h1>
+            <p class="subheader">I promise to make you smile every day ❤️</p>
+        </div>
+        
+        <div class="gif_container">
+            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDdtZ2JiZDR0a3lvMWF4OG8yc3p6Ymdvd3g2d245amdveDhyYmx6eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cLS1cfxvGOPVpf9g3y/giphy.gif" alt="Cute animated illustration">
+        </div>
+        
+        <div class="buttons">
+            <button class="btn" id="yesButton">Yes, Absolutely!</button>
+            <button class="btn" id="noButton">Not a Chance</button>
+        </div>
+        
+        <p class="attempt-counter">Attempts: <span id="attemptCount">0</span></p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const yesBtn = document.getElementById('yesButton');
+        const noBtn = document.getElementById('noButton');
+        const attemptCount = document.getElementById('attemptCount');
+        let attempts = 0;
+        
+        // Improved runaway button logic
+        noBtn.addEventListener('mouseover', function() {
+            attempts++;
+            attemptCount.textContent = attempts;
+            
+            const container = document.querySelector('.container');
+            const containerRect = container.getBoundingClientRect();
+            
+            // Calculate available space
+            const maxX = containerRect.width - noBtn.offsetWidth;
+            const maxY = containerRect.height - noBtn.offsetHeight;
+            
+            // Calculate new position with boundary checks
+            let newX, newY;
+            const buffer = 50; // Minimum distance from edges
+            
+            // Get current mouse position
+            const mouseX = event.clientX - containerRect.left;
+            const mouseY = event.clientY - containerRect.top;
+            
+            // Calculate direction away from mouse
+            const centerX = containerRect.width / 2;
+            const centerY = containerRect.height / 2;
+            
+            // Determine quadrant and move accordingly
+            if (mouseX < centerX && mouseY < centerY) {
+                // Top-left quadrant - move bottom-right
+                newX = Math.min(mouseX + 150, maxX - buffer);
+                newY = Math.min(mouseY + 150, maxY - buffer);
+            } else if (mouseX >= centerX && mouseY < centerY) {
+                // Top-right quadrant - move bottom-left
+                newX = Math.max(mouseX - 150, buffer);
+                newY = Math.min(mouseY + 150, maxY - buffer);
+            } else if (mouseX < centerX && mouseY >= centerY) {
+                // Bottom-left quadrant - move top-right
+                newX = Math.min(mouseX + 150, maxX - buffer);
+                newY = Math.max(mouseY - 150, buffer);
+            } else {
+                // Bottom-right quadrant - move top-left
+                newX = Math.max(mouseX - 150, buffer);
+                newY = Math.max(mouseY - 150, buffer);
+            }
+            
+            // Apply new position with smooth transition
+            noBtn.style.transform = `translate(${newX - noBtn.offsetLeft}px, ${newY - noBtn.offsetTop}px)`;
+            
+            // Add playful rotation effect
+            noBtn.style.transform += ` rotate(${Math.random() * 20 - 10}deg)`;
+        });
+        
+        // Celebration function
+        yesBtn.addEventListener('click', function() {
+            // Confetti effect
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ff6b6b', '#4ecdc4', '#ff9f1c', '#292f36']
+            });
+            
+            // Change button text and style
+            yesBtn.textContent = "Yay! Let's Celebrate!";
+            yesBtn.style.background = "linear-gradient(45deg, #ff6b6b, #ff9f1c)";
+            yesBtn.style.animation = "pulse 1.5s infinite";
+            
+            // Hide no button
+            noBtn.style.display = "none";
+            
+            // Change header text
+            document.querySelector('.header_text').textContent = "You've Made Me So Happy!";
+            document.querySelector('.subheader').textContent = "Get ready for an amazing time together! 🎉";
+            
+            // Change GIF
+            document.querySelector('.gif_container img').src = "https://media.giphy.com/media/T86i6yDyOYz7J6dPhf/giphy.gif";
+            
+            // Add floating hearts
+            setInterval(() => {
+                confetti({
+                    particleCount: 5,
+                    spread: 50,
+                    origin: { x: Math.random(), y: Math.random() },
+                    colors: ['#ff6b6b'],
+                    shapes: ['heart']
+                });
+            }, 500);
+        });
+    </script>
+</body>
+</html>
